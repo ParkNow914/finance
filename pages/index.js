@@ -1,9 +1,14 @@
 import { useContext } from 'react';
 import useSWR from 'swr';
 import { UserContext } from './_app';
+import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/router';
 
-const fetcher = (url) => fetch(url).then((res) => res.json());
+const fetcherWithToken = (url, token) => fetch(url, {
+  headers: {
+    Authorization: `Bearer ${token}`
+  }
+}).then((res) => res.json());
 
 export default function Dashboard() {
   const session = useContext(UserContext);
@@ -14,14 +19,22 @@ export default function Dashboard() {
     return null;
   }
 
-  const { data, error } = useSWR('/api/sinais', fetcher, { refreshInterval: 10000 });
+  const { data, error } = useSWR(
+    session ? ['/api/sinais', session.access_token] : null,
+    ([url, token]) => fetcherWithToken(url, token),
+    { refreshInterval: 10000 }
+  );
 
   if (error) return <div>Falha ao carregar</div>;
   if (!data) return <div>Carregando...</div>;
+  if (!Array.isArray(data)) return <div>Nenhum sinal disponível</div>;
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Dashboard de Sinais</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Dashboard de Sinais</h1>
+        <button onClick={async () => { await supabase.auth.signOut(); router.replace('/login'); }} className="text-sm underline">Sair</button>
+      </div>
       <table className="min-w-full bg-white border">
         <thead>
           <tr>
