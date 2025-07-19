@@ -14,10 +14,16 @@ export default function Signup() {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`
+      }
+    });
     if (error) alert(error.message);
     else {
-      alert('Conta criada! Verifique seu e-mail e depois faça login.');
+      alert('Conta criada! Você será redirecionado para o login.');
       router.replace('/login');
     }
   };
