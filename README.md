@@ -1,54 +1,150 @@
-# Finance Dashboard (Always-Free Stack)
+# Finance Dashboard
 
-Este projeto implementa um dashboard online para sinais de compra/venda de ativos.
+Um dashboard de sinais financeiros construído com Next.js, Supabase e Tailwind CSS.
 
-## Stack
+## 🚀 Funcionalidades
 
-| Camada | Tecnologia | Plano Gratuito |
-| ------ | ---------- | -------------- |
-| Front/Backend | Next.js (React) hospedado no Vercel | Sempre grátis (serverless) |
-| Banco de Dados + Auth | Supabase Postgres/Auth | Free tier (500 MB) |
-| Coleta de dados | GitHub Actions + Yahoo Finance API (yfinance) | 2 000 min/mês grátis |
+- ✅ Autenticação com Supabase
+- ✅ Dashboard de sinais em tempo real
+- ✅ Interface responsiva e moderna
+- ✅ Atualização automática de dados
+- ✅ Tratamento robusto de erros
+- ✅ Otimizado para produção
 
-## Estrutura
+## 📋 Pré-requisitos
 
-```
-finance/
-├─ pages/           # Páginas Next.js
-│  ├─ index.js      # Dashboard
-│  └─ login.js      # Tela de login
-├─ pages/api/       # Rotas API serverless
-│  └─ sinais.js     # Endpoint JSON de sinais
-├─ lib/
-│  └─ supabase.js   # Cliente Supabase reutilizável
-├─ .github/
-│  └─ workflows/
-│     └─ update_quotes.yml  # Job diário que populará o banco
-└─ ...
+- Node.js 18+ 
+- npm 8+
+- Conta no Supabase
+
+## 🛠️ Instalação
+
+1. **Clone o repositório**
+```bash
+git clone <seu-repositorio>
+cd finance-dashboard
 ```
 
-### Variáveis de ambiente
-Crie um arquivo `.env.local`:
-
-```
-NEXT_PUBLIC_SUPABASE_URL=<url>
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<chave anon>
-SUPABASE_SERVICE_ROLE=<chave service role>  # usada pelo GitHub Action
-TICKERS=AAPL,MSFT,GOOG  # ativos a monitorar
+2. **Instale as dependências**
+```bash
+npm install
 ```
 
-## Scripts úteis
+3. **Configure as variáveis de ambiente**
+   
+   Crie um arquivo `.env.local` na raiz do projeto:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-chave-anonima
+   ```
+
+4. **Configure o Supabase**
+   
+   - Crie um projeto no [Supabase](https://supabase.com)
+   - Crie uma tabela `sinais` com as colunas:
+     - `id` (uuid, primary key)
+     - `ticker` (text)
+     - `variacao` (numeric)
+     - `quantidade` (integer)
+     - `acao` (text) - valores: 'COMPRA' ou 'VENDA'
+     - `created_at` (timestamp with time zone)
+
+## 🚀 Desenvolvimento
 
 ```bash
-npm install        # instala dependências
-npm run dev        # roda localmente em http://localhost:3000
+# Iniciar servidor de desenvolvimento
+npm run dev
+
+# Acesse http://localhost:3000
 ```
 
-## Deploy
-1. Faça fork deste repositório no GitHub.
-2. Conecte no Vercel (grátis) e importe o repositório.
-3. Defina as variáveis de ambiente no Vercel.
-4. Crie projeto no Supabase e copie URL + chaves.
-5. GitHub Actions será executado automaticamente (precisa setar secrets SUPABASE_SERVICE_ROLE & TICKERS).
+## 🏭 Produção
 
-Pronto! Seu dashboard ficará online em minutos, totalmente dentro dos planos grátis.
+### Build para produção
+```bash
+# Limpar cache e fazer build
+npm run build:prod
+
+# Iniciar servidor de produção
+npm start
+```
+
+### Deploy
+
+#### Vercel (Recomendado)
+1. Conecte seu repositório ao Vercel
+2. Configure as variáveis de ambiente no dashboard do Vercel
+3. Deploy automático a cada push
+
+#### Docker
+```dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY . .
+RUN npm run build
+
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+#### Outros provedores
+- **Netlify**: Configure build command como `npm run build` e publish directory como `.next`
+- **Railway**: Deploy direto do GitHub
+- **Heroku**: Use o buildpack do Node.js
+
+## 🔧 Scripts Disponíveis
+
+- `npm run dev` - Servidor de desenvolvimento
+- `npm run build` - Build para produção
+- `npm run start` - Servidor de produção
+- `npm run lint` - Verificar código
+- `npm run lint:fix` - Corrigir problemas de linting
+- `npm run clean` - Limpar cache
+- `npm run build:prod` - Build limpo para produção
+
+## 🛡️ Segurança
+
+- ✅ Headers de segurança configurados
+- ✅ Autenticação JWT
+- ✅ Validação de entrada
+- ✅ Tratamento de erros robusto
+- ✅ HTTPS obrigatório em produção
+
+## 📱 Responsividade
+
+O dashboard é totalmente responsivo e funciona em:
+- ✅ Desktop
+- ✅ Tablet
+- ✅ Mobile
+
+## 🔄 Atualizações
+
+Os dados são atualizados automaticamente a cada 10 segundos.
+
+## 🐛 Troubleshooting
+
+### Erro de variáveis de ambiente
+```
+Supabase env vars are missing
+```
+**Solução**: Configure as variáveis `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+### Erro de build
+```
+Error: supabaseUrl is required
+```
+**Solução**: Verifique se as variáveis de ambiente estão configuradas corretamente
+
+### Erro de autenticação
+```
+Not authorized
+```
+**Solução**: Verifique se o usuário está logado e se o token é válido
+
+## 📄 Licença
+
+MIT License
